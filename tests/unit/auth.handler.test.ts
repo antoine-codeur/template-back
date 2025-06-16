@@ -62,6 +62,7 @@ describe('Auth Handlers Unit Tests', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           lastLogin: null,
+          profileImageUrl: null,
         },
         token: 'jwt-token',
       };
@@ -122,6 +123,7 @@ describe('Auth Handlers Unit Tests', () => {
           createdAt: new Date(),
           updatedAt: new Date(),
           lastLogin: new Date(),
+          profileImageUrl: null,
         },
         token: 'jwt-token',
       };
@@ -177,6 +179,7 @@ describe('Auth Handlers Unit Tests', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         lastLogin: null,
+        profileImageUrl: null,
       };
 
       mockedAuthService.getProfile.mockResolvedValue(userProfile);
@@ -229,6 +232,7 @@ describe('Auth Handlers Unit Tests', () => {
         createdAt: new Date(),
         updatedAt: new Date(),
         lastLogin: null,
+        profileImageUrl: null,
       };
 
       mockedAuthService.updateProfile.mockResolvedValue(updatedProfile);

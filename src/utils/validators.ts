@@ -83,6 +83,26 @@ export const userQuerySchema = paginationSchema.extend({
   status: z.enum(['ACTIVE', 'SUSPENDED', 'DELETED']).optional(),
 });
 
+// File validation
+export const profileImageSchema = z.object({
+  fieldname: z.string(),
+  originalname: z.string(),
+  encoding: z.string(),
+  mimetype: z.enum(['image/jpeg', 'image/png', 'image/webp'], {
+    errorMap: () => ({ message: 'Only JPEG, PNG, and WebP images are allowed' })
+  }),
+  size: z.number().max(5 * 1024 * 1024, 'File size must be less than 5MB'),
+  buffer: z.instanceof(Buffer)
+});
+
+// URL validation for profile images
+export const profileImageUrlSchema = z
+  .string()
+  .url('Invalid image URL')
+  .regex(/\/uploads\/profile-images\/[^\/]+\.(jpeg|jpg|png|webp)$/i, 'URL must point to a valid profile image')
+  .nullable()
+  .optional();
+
 // Utility functions
 export const isValidEmail = (email: string): boolean => {
   return emailSchema.safeParse(email).success;
@@ -94,4 +114,8 @@ export const isValidPassword = (password: string): boolean => {
 
 export const isValidUUID = (uuid: string): boolean => {
   return uuidSchema.safeParse(uuid).success;
+};
+
+export const isValidProfileImage = (file: Express.Multer.File): boolean => {
+  return profileImageSchema.safeParse(file).success;
 };

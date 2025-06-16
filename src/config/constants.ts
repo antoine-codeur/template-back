@@ -45,3 +45,30 @@ export const RATE_LIMIT_CONFIG = {
   API_REQUESTS: 100,
   API_WINDOW_MINUTES: 15,
 } as const;
+
+export const IMAGE_FORMATS = {
+  JPEG: 'jpeg',
+  WEBP: 'webp',
+  PNG: 'png',
+  SVG: 'svg',
+} as const;
+
+export const SUPPORTED_IMAGE_FORMATS = [
+  IMAGE_FORMATS.JPEG,
+  IMAGE_FORMATS.WEBP,
+  IMAGE_FORMATS.PNG,
+] as const;
+
+export const PROFILE_IMAGE_CONFIG = {
+  MAX_FILE_SIZE: 5 * 1024 * 1024, // 5MB
+  OUTPUT_FORMAT: IMAGE_FORMATS.WEBP, // Default output format
+  OUTPUT_QUALITY: 85,
+  OUTPUT_WIDTH: 400,
+  OUTPUT_HEIGHT: 400,
+  ALLOWED_MIME_TYPES: [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+  ],
+} as const;

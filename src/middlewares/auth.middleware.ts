@@ -1,8 +1,23 @@
 import { Request, Response, NextFunction } from 'express';
 import { HTTP_STATUS, USER_ROLES } from '@/config/constants';
-import { AuthenticatedRequest, UserRole, ApiResponse } from '@/types';
+import { AuthenticatedRequest, UserRole, ApiResponse, SafeUser } from '@/types';
 import { extractBearerToken, verifyToken } from '@/utils/helpers';
 import { AppError } from './error.middleware';
+import { UserRepository } from '@/repositories/user.repository';
+
+// Helper function to convert User to SafeUser
+const toSafeUser = (user: any): SafeUser => ({
+  id: user.id,
+  email: user.email,
+  name: user.name ?? null,
+  bio: user.bio ?? null,
+  profileImageUrl: user.profileImageUrl ?? null,
+  role: user.role,
+  status: user.status,
+  createdAt: user.createdAt,
+  updatedAt: user.updatedAt,
+  lastLogin: user.lastLogin ?? null,
+});
 
 export const authenticate = async (
   req: AuthenticatedRequest,
@@ -18,27 +33,27 @@ export const authenticate = async (
 
     const payload = verifyToken(token);
     
-    // You would typically fetch the user from database here
-    // For now, we'll just attach the payload info
-    req.user = {
-      id: payload.userId,
-      email: payload.email,
-      role: payload.role,
-      // These would come from database
-      name: null,
-      bio: null,
-      status: 'ACTIVE',
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      lastLogin: null,
-    };
+    // Fetch the user from database
+    const userRepository = new UserRepository();
+    const user = await userRepository.findById(payload.userId);
+    
+    if (!user) {
+      throw new AppError('User not found', HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    // Check if user is active
+    if (user.status !== 'ACTIVE') {
+      throw new AppError('Account is not active', HTTP_STATUS.UNAUTHORIZED);
+    }
+
+    req.user = toSafeUser(user);
 
     next();
   } catch (error) {
     const response: ApiResponse = {
       success: false,
       message: 'Invalid or expired token',
-      error: 'Invalid or expired token',
+      error: error instanceof AppError ? error.message : 'Invalid or expired token',
     };
 
     res.status(HTTP_STATUS.UNAUTHORIZED).json(response);

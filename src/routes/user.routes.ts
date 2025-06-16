@@ -8,8 +8,11 @@ import {
   activateUserController,
   getMeController,
   updateMeController,
+  uploadProfileImageController,
+  deleteProfileImageController,
 } from '@/controllers/user.controller';
 import { authenticate, requireAdmin } from '@/middlewares/auth.middleware';
+import { uploadProfileImage, handleMulterError } from '@/middlewares/upload.middleware';
 
 const router = Router();
 
@@ -19,6 +22,10 @@ router.use(authenticate);
 // Regular user routes
 router.get('/me', getMeController);
 router.put('/me', updateMeController);
+
+// Profile image routes
+router.post('/me/profile-image', uploadProfileImage, uploadProfileImageController);
+router.delete('/me/profile-image', deleteProfileImageController);
 
 // Admin routes
 router.get('/', requireAdmin, getUsersController);

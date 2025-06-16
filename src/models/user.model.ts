@@ -4,7 +4,8 @@ import {
   passwordSchema, 
   nameSchema, 
   bioSchema, 
-  uuidSchema 
+  uuidSchema,
+  profileImageUrlSchema
 } from '@/utils/validators';
 
 // User model schema
@@ -14,6 +15,7 @@ export const UserSchema = z.object({
   password: z.string(),
   name: nameSchema.nullable(),
   bio: bioSchema.nullable(),
+  profileImageUrl: z.string().nullable(),
   role: z.enum(['USER', 'ADMIN', 'SUPER_ADMIN']),
   status: z.enum(['ACTIVE', 'SUSPENDED', 'DELETED']),
   createdAt: z.date(),
@@ -37,6 +39,7 @@ export const CreateUserSchema = z.object({
 export const UpdateUserSchema = z.object({
   name: nameSchema.optional(),
   bio: bioSchema.optional(),
+  profileImageUrl: z.string().nullable().optional(),
   role: z.enum(['USER', 'ADMIN', 'SUPER_ADMIN']).optional(),
   status: z.enum(['ACTIVE', 'SUSPENDED', 'DELETED']).optional(),
 });

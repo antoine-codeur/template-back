@@ -4,6 +4,7 @@ import { PaginatedResponse } from '@/types';
 import { sanitizeUser, calculatePagination } from '@/utils/formatters';
 import { AppError } from '@/middlewares/error.middleware';
 import { HTTP_STATUS } from '@/config/constants';
+import { FileService, ProcessedImage } from '@/services/file.service';
 
 export class UserService {
   /**
@@ -127,6 +128,83 @@ export class UserService {
     }
 
     return sanitizeUser(user);
+  }
+
+  /**
+   * Get real user from database by ID (for auth middleware compatibility)
+   */
+  async getRealUser(userId: string): Promise<SafeUser> {
+    const user = await userRepository.findById(userId);
+    if (!user) {
+      throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
+    }
+    return sanitizeUser(user);
+  }
+
+  /**
+   * Update user profile image
+   */
+  async updateProfileImage(userId: string, file: Express.Multer.File): Promise<SafeUser> {
+    // Get current user to check for existing profile image
+    const currentUser = await userRepository.findById(userId);
+    if (!currentUser) {
+      throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Delete old profile image if exists
+    if (currentUser.profileImageUrl) {
+      const oldFilename = FileService.extractFilenameFromUrl(currentUser.profileImageUrl);
+      if (oldFilename) {
+        await FileService.deleteProfileImage(oldFilename);
+      }
+    }
+
+    // Process and save new image
+    const processedImage: ProcessedImage = await FileService.processProfileImage(file);
+
+    // Update user with new profile image URL
+    const updatedUser = await userRepository.update(userId, {
+      profileImageUrl: processedImage.url
+    });
+
+    if (!updatedUser) {
+      // Clean up uploaded file if user update fails
+      await FileService.deleteProfileImage(processedImage.filename);
+      throw new AppError('Failed to update user profile image', HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    }
+
+    return sanitizeUser(updatedUser);
+  }
+
+  /**
+   * Delete user profile image
+   */
+  async deleteProfileImage(userId: string): Promise<SafeUser> {
+    const currentUser = await userRepository.findById(userId);
+    if (!currentUser) {
+      throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
+    }
+
+    if (!currentUser.profileImageUrl) {
+      throw new AppError('User has no profile image', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Delete file from filesystem
+    const filename = FileService.extractFilenameFromUrl(currentUser.profileImageUrl);
+    if (filename) {
+      await FileService.deleteProfileImage(filename);
+    }
+
+    // Remove URL from database
+    const updatedUser = await userRepository.update(userId, {
+      profileImageUrl: null
+    });
+
+    if (!updatedUser) {
+      throw new AppError('Failed to delete profile image', HTTP_STATUS.INTERNAL_SERVER_ERROR);
+    }
+
+    return sanitizeUser(updatedUser);
   }
 }
 

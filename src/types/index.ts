@@ -11,6 +11,7 @@ export interface User {
   password: string;
   name?: string | null;
   bio?: string | null;
+  profileImageUrl?: string | null;
   role: UserRole;
   status: UserStatus;
   createdAt: Date;
@@ -23,6 +24,7 @@ export interface SafeUser {
   email: string;
   name: string | null;
   bio: string | null;
+  profileImageUrl: string | null;
   role: UserRole;
   status: UserStatus;
   createdAt: Date;

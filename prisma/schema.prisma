@@ -11,16 +11,17 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String?
-  bio       String?
-  role      String   @default("USER") // USER, ADMIN, SUPER_ADMIN
-  status    String   @default("ACTIVE") // ACTIVE, SUSPENDED, DELETED
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  lastLogin DateTime?
+  id               String   @id @default(cuid())
+  email            String   @unique
+  password         String
+  name             String?
+  bio              String?
+  profileImageUrl  String?
+  role             String   @default("USER") // USER, ADMIN, SUPER_ADMIN
+  status           String   @default("ACTIVE") // ACTIVE, SUSPENDED, DELETED
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  lastLogin        DateTime?
 
   @@map("users")
 }

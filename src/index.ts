@@ -2,13 +2,22 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
 import { env } from '@/config/environment';
 import { logger } from '@/config/logger';
 import { requestLogger } from '@/middlewares/logger.middleware';
 import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
+import { handleMulterError } from '@/middlewares/upload.middleware';
+import { FileService } from '@/services/file.service';
 import routes from '@/routes';
 
 const app = express();
+
+// Initialize upload directories
+FileService.initializeDirectories().catch((error) => {
+  logger.error('Failed to initialize upload directories:', error);
+  process.exit(1);
+});
 
 // Security middleware
 app.use(helmet());
@@ -34,6 +43,9 @@ app.use(limiter);
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
+// Static file serving for uploads
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // Logging middleware
 app.use(requestLogger);
 
@@ -41,6 +53,7 @@ app.use(requestLogger);
 app.use('/api', routes);
 
 // Error handling middleware
+app.use(handleMulterError);
 app.use(notFoundHandler);
 app.use(errorHandler);
 

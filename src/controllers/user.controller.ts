@@ -10,6 +10,10 @@ import {
   getCurrentUserHandler,
   updateCurrentUserHandler,
 } from '@/handlers/user/user.handler';
+import {
+  uploadProfileImageHandler,
+  deleteProfileImageHandler
+} from '@/handlers/user/profile-image.handler';
 import { UserQuerySchema, UpdateUserSchema, UpdateProfileSchema } from '@/models/user.model';
 import { HTTP_STATUS } from '@/config/constants';
 import { ApiResponse } from '@/types';
@@ -176,6 +180,38 @@ export const updateCurrentUserController = async (req: AuthenticatedRequest, res
     };
     res.status(HTTP_STATUS.BAD_REQUEST).json(response);
   }
+};
+
+/**
+ * Upload profile image controller
+ */
+export const uploadProfileImageController = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  if (!req.user || !req.user.id) {
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'Authentication required',
+      error: 'User not authenticated'
+    });
+    return;
+  }
+
+  await uploadProfileImageHandler(req.user.id, req.file!, res);
+};
+
+/**
+ * Delete profile image controller
+ */
+export const deleteProfileImageController = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
+  if (!req.user || !req.user.id) {
+    res.status(HTTP_STATUS.UNAUTHORIZED).json({
+      success: false,
+      message: 'Authentication required',
+      error: 'User not authenticated'
+    });
+    return;
+  }
+
+  await deleteProfileImageHandler(req.user.id, res);
 };
 
 // Export aliases for route compatibility
