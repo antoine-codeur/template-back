@@ -99,6 +99,7 @@ dev.db*
 # Logs
 logs/
 *.log
+trace/
 
 # OS generated files
 .DS_Store

@@ -64,7 +64,10 @@ export class UserService {
    * Suspend user
    */
   async suspendUser(id: string): Promise<SafeUser> {
-    const success = await userRepository.suspend(id);
+    const success = await userRepository.suspendUser(id, {
+      reason: 'Suspended by admin',
+      suspendedBy: 'system',
+    });
     if (!success) {
       throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
     }
@@ -77,7 +80,7 @@ export class UserService {
    * Activate user
    */
   async activateUser(id: string): Promise<SafeUser> {
-    const success = await userRepository.activate(id);
+    const success = await userRepository.activateUser(id, 'system');
     if (!success) {
       throw new AppError('User not found', HTTP_STATUS.NOT_FOUND);
     }

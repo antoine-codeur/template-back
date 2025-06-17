@@ -20,7 +20,8 @@ export const validateRequest = (schema: ZodSchema) => {
 
         const response: ApiResponse = {
           success: false,
-          error: 'Validation failed',
+          message: 'Invalid input data',
+          error: 'Invalid input data',
           data: errors,
         };
 
@@ -37,6 +38,7 @@ export const validateRequest = (schema: ZodSchema) => {
     } catch (error) {
       const response: ApiResponse = {
         success: false,
+        message: 'Validation error',
         error: 'Validation error',
       };
 
@@ -58,7 +60,8 @@ export const validateBody = (schema: ZodSchema) => {
 
         const response: ApiResponse = {
           success: false,
-          error: 'Validation failed',
+          message: 'Invalid input data',
+          error: 'Invalid input data',
           data: errors,
         };
 
@@ -71,6 +74,7 @@ export const validateBody = (schema: ZodSchema) => {
     } catch (error) {
       const response: ApiResponse = {
         success: false,
+        message: 'Validation error',
         error: 'Validation error',
       };
 
@@ -92,7 +96,8 @@ export const validateQuery = (schema: ZodSchema) => {
 
         const response: ApiResponse = {
           success: false,
-          error: 'Validation failed',
+          message: 'Invalid input data',
+          error: 'Invalid input data',
           data: errors,
         };
 
@@ -105,6 +110,7 @@ export const validateQuery = (schema: ZodSchema) => {
     } catch (error) {
       const response: ApiResponse = {
         success: false,
+        message: 'Validation error',
         error: 'Validation error',
       };
 

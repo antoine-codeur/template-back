@@ -1,0 +1,27 @@
+Hello {{name}},
+
+Your {{appName}} account has been suspended.
+
+Suspension Date: {{suspensionDate}}
+
+{{#if reason}}
+Reason for suspension:
+{{reason}}
+{{/if}}
+
+During this suspension period, you will not be able to access your account or use our services.
+
+What happens next:
+- Your account access is temporarily restricted
+- Our team will review your account status  
+- You will be notified if your account is reactivated
+
+If you believe this suspension was made in error or if you have any questions, please contact our support team immediately.
+
+We appreciate your understanding and cooperation.
+
+Best regards,
+The {{appName}} Team
+
+---
+This is an automated email. Please do not reply to this message.

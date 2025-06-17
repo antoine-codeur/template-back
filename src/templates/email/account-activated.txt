@@ -1,0 +1,28 @@
+Hello {{name}},
+
+Great news! Your {{appName}} account has been activated.
+
+Activation Date: {{activationDate}}
+
+{{#if reason}}
+Activation Note: {{reason}}
+{{/if}}
+
+You now have full access to your account and can resume using all our services.
+
+You can now:
+- Log in to your account
+- Access all platform features  
+- Resume your normal activities
+
+Login here: {{loginUrl}}
+
+If you experience any issues accessing your account, please don't hesitate to contact our support team.
+
+Thank you for your patience during the suspension period. We're glad to have you back!
+
+Best regards,
+The {{appName}} Team
+
+---
+This is an automated email. Please do not reply to this message.

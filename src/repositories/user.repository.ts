@@ -178,14 +178,20 @@ export class UserRepository {
   }
 
   /**
-   * Suspend user
+   * Suspend user by ID
    */
-  async suspend(id: string): Promise<boolean> {
+  async suspendUser(
+    id: string, 
+    suspensionData: { reason: string; suspendedBy: string }
+  ): Promise<boolean> {
     try {
       await prisma.user.update({
         where: { id },
         data: {
           status: 'SUSPENDED',
+          suspensionReason: suspensionData.reason,
+          suspendedAt: new Date(),
+          suspendedBy: suspensionData.suspendedBy,
           updatedAt: new Date(),
         },
       });
@@ -199,14 +205,17 @@ export class UserRepository {
   }
 
   /**
-   * Activate user
+   * Activate suspended user by ID
    */
-  async activate(id: string): Promise<boolean> {
+  async activateUser(id: string, activatedBy: string): Promise<boolean> {
     try {
       await prisma.user.update({
         where: { id },
         data: {
           status: 'ACTIVE',
+          suspensionReason: null,
+          suspendedAt: null,
+          suspendedBy: null,
           updatedAt: new Date(),
         },
       });
