@@ -97,9 +97,12 @@ export class FileService {
     try {
       const filePath = path.join(FileService.PROFILE_IMAGES_DIR, filename);
       await fs.unlink(filePath);
-    } catch (error) {
-      // File might not exist, which is okay
-      console.warn('Could not delete file:', filename, error);
+    } catch (error: any) {
+      // Only warn if it's not a "file not found" error
+      if (error.code !== 'ENOENT') {
+        console.warn('Could not delete file:', filename, error);
+      }
+      // For ENOENT errors, file doesn't exist which is fine - silently continue
     }
   }
 

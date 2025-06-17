@@ -33,23 +33,32 @@ export class TestCleanup {
    */
   static async cleanupFiles(): Promise<void> {
     const cleanupPromises: Promise<void>[] = [];
+    const processedFiles = new Set<string>(); // Avoid duplicates
 
-    // Clean up tracked filenames
-    for (const filename of this.uploadedFiles) {
-      cleanupPromises.push(
-        FileService.deleteProfileImage(filename).catch((error: any) => {
-          console.warn(`Failed to delete file ${filename}:`, error.message);
-        })
-      );
-    }
-
-    // Clean up tracked image URLs
+    // Extract filenames from URLs and add to files set
     for (const imageUrl of this.uploadedImageUrls) {
       const filename = FileService.extractFilenameFromUrl(imageUrl);
       if (filename) {
+        this.uploadedFiles.add(filename);
+      }
+    }
+
+    // Clean up all unique files
+    for (const filename of this.uploadedFiles) {
+      if (!processedFiles.has(filename)) {
+        processedFiles.add(filename);
+        
         cleanupPromises.push(
-          FileService.deleteProfileImage(filename).catch((error: any) => {
-            console.warn(`Failed to delete file from URL ${imageUrl}:`, error.message);
+          // First check if file exists before trying to delete
+          FileService.fileExists(filename).then(exists => {
+            if (exists) {
+              return FileService.deleteProfileImage(filename);
+            }
+            // File doesn't exist, no need to delete
+            return Promise.resolve();
+          }).catch((error: any) => {
+            // Only log unexpected errors
+            console.warn(`Failed to delete file ${filename}:`, error.message);
           })
         );
       }
