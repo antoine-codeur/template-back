@@ -18,6 +18,8 @@ export const UserSchema = z.object({
   profileImageUrl: z.string().nullable(),
   role: z.enum(['USER', 'ADMIN', 'SUPER_ADMIN']),
   status: z.enum(['ACTIVE', 'SUSPENDED', 'DELETED']),
+  emailVerified: z.boolean(),
+  emailVerifiedAt: z.date().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
   lastLogin: z.date().nullable(),

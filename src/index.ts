@@ -9,15 +9,29 @@ import { requestLogger } from '@/middlewares/logger.middleware';
 import { errorHandler, notFoundHandler } from '@/middlewares/error.middleware';
 import { handleMulterError } from '@/middlewares/upload.middleware';
 import { FileService } from '@/services/file.service';
+import { EmailService } from '@/services/email.service';
 import routes from '@/routes';
+
+// Initialize services
+const initializeServices = async () => {
+  try {
+    // Initialize upload directories
+    await FileService.initializeDirectories();
+    logger.info('File service initialized');
+
+    // Initialize email service
+    await EmailService.initialize();
+    logger.info('Email service initialized');
+  } catch (error) {
+    logger.error('Failed to initialize services:', error);
+    process.exit(1);
+  }
+};
 
 const app = express();
 
-// Initialize upload directories
-FileService.initializeDirectories().catch((error) => {
-  logger.error('Failed to initialize upload directories:', error);
-  process.exit(1);
-});
+// Initialize services
+initializeServices();
 
 // Security middleware
 app.use(helmet());

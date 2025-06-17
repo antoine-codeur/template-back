@@ -19,9 +19,56 @@ model User {
   profileImageUrl  String?
   role             String   @default("USER") // USER, ADMIN, SUPER_ADMIN
   status           String   @default("ACTIVE") // ACTIVE, SUSPENDED, DELETED
+  emailVerified    Boolean  @default(false)
+  emailVerifiedAt  DateTime?
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   lastLogin        DateTime?
 
+  // Email relations
+  emailTokens      EmailToken[]
+  emailLogs        EmailLog[]
+
   @@map("users")
+}
+
+model EmailToken {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String   // VERIFICATION, PASSWORD_RESET
+  token     String   @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime @default(now())
+
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId, type])
+  @@map("email_tokens")
+}
+
+model EmailLog {
+  id          String   @id @default(cuid())
+  userId      String?
+  emailType   String   // WELCOME, EMAIL_VERIFICATION, PASSWORD_RESET, etc.
+  to          String
+  from        String
+  subject     String
+  status      String   @default("PENDING") // PENDING, SENT, FAILED, DELIVERED
+  provider    String   // smtp, sendgrid, aws-ses, console
+  errorMessage String?
+  metadata    String?  // JSON string for additional data
+  sentAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([emailType])
+  @@index([status])
+  @@map("email_logs")
 }

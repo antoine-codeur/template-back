@@ -1,0 +1,17 @@
+Hello {{name}},
+
+Thank you for signing up for {{appName}}!
+
+To complete your registration and start using your account, please verify your email address by clicking the link below:
+
+{{verificationUrl}}
+
+This verification link will expire in 24 hours.
+
+If you didn't create an account with us, please ignore this email.
+
+Best regards,
+The {{appName}} Team
+
+---
+This is an automated email. Please do not reply to this message.

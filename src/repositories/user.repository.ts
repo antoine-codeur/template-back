@@ -220,6 +220,28 @@ export class UserRepository {
   }
 
   /**
+   * Update email verification status
+   */
+  async updateEmailVerification(id: string, verified: boolean): Promise<boolean> {
+    try {
+      await prisma.user.update({
+        where: { id },
+        data: {
+          emailVerified: verified,
+          emailVerifiedAt: verified ? new Date() : null,
+          updatedAt: new Date(),
+        },
+      });
+      return true;
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2025') {
+        return false;
+      }
+      throw error;
+    }
+  }
+
+  /**
    * Check if email exists
    */
   async emailExists(email: string): Promise<boolean> {

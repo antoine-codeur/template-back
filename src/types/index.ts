@@ -14,6 +14,8 @@ export interface User {
   profileImageUrl?: string | null;
   role: UserRole;
   status: UserStatus;
+  emailVerified: boolean;
+  emailVerifiedAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date | null;
@@ -27,6 +29,8 @@ export interface SafeUser {
   profileImageUrl: string | null;
   role: UserRole;
   status: UserStatus;
+  emailVerified: boolean;
+  emailVerifiedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
   lastLogin: Date | null;

@@ -89,6 +89,15 @@ export class AuthRepository {
   }
 
   /**
+   * Update password (for password reset)
+   */
+  async updatePassword(userId: string, newPassword: string): Promise<boolean> {
+    // Hash new password and update
+    const hashedNewPassword = await hashPassword(newPassword);
+    return userRepository.changePassword(userId, hashedNewPassword);
+  }
+
+  /**
    * Update user profile
    */
   async updateProfile(userId: string, profileData: { name?: string; bio?: string }): Promise<User | null> {

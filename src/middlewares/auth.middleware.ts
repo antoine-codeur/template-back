@@ -14,6 +14,8 @@ const toSafeUser = (user: any): SafeUser => ({
   profileImageUrl: user.profileImageUrl ?? null,
   role: user.role,
   status: user.status,
+  emailVerified: user.emailVerified ?? false,
+  emailVerifiedAt: user.emailVerifiedAt ?? null,
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
   lastLogin: user.lastLogin ?? null,

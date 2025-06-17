@@ -1,3 +1,5 @@
+import { env } from './environment';
+
 export const HTTP_STATUS = {
   OK: 200,
   CREATED: 201,
@@ -71,4 +73,50 @@ export const PROFILE_IMAGE_CONFIG = {
     'image/png',
     'image/webp',
   ],
+} as const;
+
+/**
+ * Email constants using environment variables
+ */
+export const EMAIL_CONSTANTS = {
+  VERIFICATION_TOKEN_EXPIRY: 24 * 60 * 60 * 1000, // 24 hours in milliseconds
+  RESET_TOKEN_EXPIRY: 2 * 60 * 60 * 1000, // 2 hours in milliseconds
+  RESEND_COOLDOWN: 5 * 60 * 1000, // 5 minutes in milliseconds
+  MAX_ATTEMPTS: 5,
+} as const;
+
+/**
+ * Email configuration
+ */
+export const EMAIL_CONFIG = {
+  VERIFICATION_TOKEN_EXPIRY: EMAIL_CONSTANTS.VERIFICATION_TOKEN_EXPIRY,
+  PASSWORD_RESET_TOKEN_EXPIRY: EMAIL_CONSTANTS.RESET_TOKEN_EXPIRY,
+  RESEND_VERIFICATION_COOLDOWN: EMAIL_CONSTANTS.RESEND_COOLDOWN,
+  MAX_VERIFICATION_ATTEMPTS: EMAIL_CONSTANTS.MAX_ATTEMPTS,
+  FROM_NAME: env.EMAIL_FROM_NAME || env.APP_NAME,
+  FROM_ADDRESS: env.EMAIL_FROM_ADDRESS,
+  TEMPLATE_DIR: 'src/templates/email',
+  PROVIDER: env.EMAIL_PROVIDER,
+} as const;
+
+/**
+ * Email providers configuration
+ */
+export const EMAIL_PROVIDERS = {
+  SMTP: 'SMTP',
+  SENDGRID: 'SENDGRID', 
+  AWS_SES: 'AWS_SES',
+  CONSOLE: 'CONSOLE', // For development/testing
+} as const;
+
+/**
+ * Email types for templates and queue
+ */
+export const EMAIL_TYPES = {
+  WELCOME: 'welcome',
+  EMAIL_VERIFICATION: 'email-verification', 
+  PASSWORD_RESET: 'password-reset',
+  PASSWORD_CHANGED: 'password-changed',
+  ACCOUNT_SUSPENDED: 'account-suspended',
+  ACCOUNT_ACTIVATED: 'account-activated',
 } as const;
