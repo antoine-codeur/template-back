@@ -2,9 +2,15 @@ import request from 'supertest';
 import app from '../../src/index';
 import { generateTestCredentials } from '../helpers/test-helpers';
 import { TestImageGenerator } from '../helpers/image-generator';
+import { TestCleanup } from '../helpers/cleanup';
 import { IMAGE_FORMATS } from '../../src/config/constants';
 
 describe('Profile Image Management', () => {
+  // Cleanup after all tests
+  afterAll(async () => {
+    await TestCleanup.cleanupFiles();
+  });
+
   // Helper function to create an authenticated user for each test
   const createAuthenticatedUser = async () => {
     const testUser = generateTestCredentials();
@@ -101,6 +107,9 @@ describe('Profile Image Management', () => {
       // Store the image URL for reference
       const imageUrl = response.body.data.user.profileImageUrl;
       expect(imageUrl).toBeTruthy();
+      
+      // Track for cleanup
+      TestCleanup.trackImageUrl(imageUrl);
     });
 
     it('should get user profile with image URL', async () => {
@@ -108,11 +117,14 @@ describe('Profile Image Management', () => {
       
       // First upload an image
       const imageBuffer = TestImageGenerator.createValidJpegBuffer();
-      await request(app)
+      const uploadResponse = await request(app)
         .post('/api/users/me/profile-image')
         .set('Authorization', `Bearer ${token}`)
         .attach('profileImage', imageBuffer, 'test.webp')
         .expect(200);
+
+      // Track for cleanup
+      TestCleanup.trackImageUrl(uploadResponse.body.data.user.profileImageUrl);
 
       // Then get the profile
       const response = await request(app)
@@ -139,6 +151,9 @@ describe('Profile Image Management', () => {
 
       const oldImageUrl = firstResponse.body.data.user.profileImageUrl;
 
+      // Track old image for cleanup
+      TestCleanup.trackImageUrl(oldImageUrl);
+
       // Upload new image
       const response = await request(app)
         .post('/api/users/me/profile-image')
@@ -147,6 +162,9 @@ describe('Profile Image Management', () => {
         .expect(200);
 
       const newImageUrl = response.body.data.user.profileImageUrl;
+
+      // Track new image for cleanup
+      TestCleanup.trackImageUrl(newImageUrl);
 
       // URLs should be different
       expect(newImageUrl).not.toBe(oldImageUrl);
@@ -162,11 +180,14 @@ describe('Profile Image Management', () => {
       
       // First upload an image
       const imageBuffer = TestImageGenerator.createValidJpegBuffer();
-      await request(app)
+      const uploadResponse = await request(app)
         .post('/api/users/me/profile-image')
         .set('Authorization', `Bearer ${token}`)
         .attach('profileImage', imageBuffer, 'setup.webp')
         .expect(200);
+
+      // Track for cleanup (in case delete fails)
+      TestCleanup.trackImageUrl(uploadResponse.body.data.user.profileImageUrl);
 
       // Then delete it
       const response = await request(app)
@@ -216,6 +237,9 @@ describe('Profile Image Management', () => {
         .expect(200);
 
       const imageUrl = uploadResponse.body.data.user.profileImageUrl;
+
+      // Track for cleanup
+      TestCleanup.trackImageUrl(imageUrl);
 
       // Access the image directly
       const imageResponse = await request(app)
