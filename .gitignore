@@ -120,3 +120,6 @@ Thumbs.db
 # Temporary files
 tmp/
 temp/
+
+# Ignore only the root .gitkeep file
+/.gitkeep
