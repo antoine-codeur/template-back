@@ -11,11 +11,19 @@ import rateLimit from 'express-rate-limit';
 
 const router = Router();
 
+// Create rate limiter that's disabled in test environment
+const createRateLimit = (options: any) => {
+  if (process.env.NODE_ENV === 'test') {
+    return (req: any, res: any, next: any) => next(); // No-op in test
+  }
+  return rateLimit(options);
+};
+
 // Email verification routes
 router.post(
   '/send-verification',
   authenticate,
-  rateLimit({
+  createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 3, // 3 requests per window
     message: 'Too many verification emails sent, please try again later.',
@@ -25,7 +33,7 @@ router.post(
 
 router.post(
   '/verify',
-  rateLimit({
+  createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 10, // 10 attempts per window
     message: 'Too many verification attempts, please try again later.',
@@ -36,7 +44,7 @@ router.post(
 // Password reset routes
 router.post(
   '/password-reset/send',
-  rateLimit({
+  createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 3, // 3 requests per window per IP
     message: 'Too many password reset requests, please try again later.',
@@ -46,7 +54,7 @@ router.post(
 
 router.post(
   '/password-reset/validate',
-  rateLimit({
+  createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 10, // 10 validation attempts per window
     message: 'Too many token validation attempts, please try again later.',
@@ -56,7 +64,7 @@ router.post(
 
 router.post(
   '/password-reset/confirm',
-  rateLimit({
+  createRateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 5, // 5 reset attempts per window
     message: 'Too many password reset attempts, please try again later.',

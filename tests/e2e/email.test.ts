@@ -19,8 +19,8 @@ describe('User Story: Email System', () => {
   let regularApiClient: any;
   let adminApiClient: any;
 
-  beforeAll(async () => {
-    // Create test users
+  beforeEach(async () => {
+    // Create test users for each test (after cleanup)
     regularUser = await createRegularUser();
     adminUser = await createAdminUser();
     

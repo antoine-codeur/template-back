@@ -1,10 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { generateToken } from '@/utils/helpers';
 import { User } from '@/models/user.model';
 import { UserRole, UserStatus } from '@/types';
 import { JwtPayload } from '@/models/auth.model';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/config/database';
 
 export interface TestUser {
   id: string;

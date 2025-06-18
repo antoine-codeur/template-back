@@ -26,6 +26,7 @@ export const sendEmailVerificationHandler = async (
       const response: ApiResponse = {
         success: true,
         message: 'Email is already verified',
+        data: {},
       };
       res.status(HTTP_STATUS.OK).json(response);
       return;
@@ -59,6 +60,7 @@ export const sendEmailVerificationHandler = async (
     const response: ApiResponse = {
       success: true,
       message: 'Verification email sent successfully',
+      data: {},
     };
 
     res.status(HTTP_STATUS.OK).json(response);
@@ -106,6 +108,7 @@ export const verifyEmailHandler = async (
       const response: ApiResponse = {
         success: true,
         message: 'Email is already verified',
+        data: {},
       };
       res.status(HTTP_STATUS.OK).json(response);
       return;
@@ -123,6 +126,7 @@ export const verifyEmailHandler = async (
     const response: ApiResponse = {
       success: true,
       message: 'Email verified successfully',
+      data: {},
     };
 
     res.status(HTTP_STATUS.OK).json(response);
