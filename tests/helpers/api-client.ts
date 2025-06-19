@@ -6,6 +6,7 @@ import app from '@/index';
  */
 export class ApiClient {
   private token?: string;
+  private customHeaders: Record<string, string> = {};
 
   constructor(token?: string) {
     this.token = token;
@@ -16,9 +17,20 @@ export class ApiClient {
     return this;
   }
 
+  setHeader(key: string, value: string) {
+    this.customHeaders[key] = value;
+    return this;
+  }
+
+  removeHeader(key: string) {
+    delete this.customHeaders[key];
+    return this;
+  }
+
   private getHeaders() {
     const headers: any = {
       'Content-Type': 'application/json',
+      ...this.customHeaders,
     };
 
     if (this.token) {

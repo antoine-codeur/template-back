@@ -19,8 +19,8 @@ describe('User Story: Email System', () => {
   let regularApiClient: any;
   let adminApiClient: any;
 
-  beforeAll(async () => {
-    // Create test users
+  beforeEach(async () => {
+    // Create test users for each test (after cleanup)
     regularUser = await createRegularUser();
     adminUser = await createAdminUser();
     
@@ -202,12 +202,14 @@ describe('User Story: Email System', () => {
 
   describe('Rate Limiting', () => {
     it('should enforce rate limits on email verification requests', async () => {
-      // Given: Multiple rapid verification requests
+      // Given: Multiple rapid verification requests with rate limit header
+      const rateLimitClient = createAuthenticatedApiClient(regularUser.token)
+        .setHeader('X-Test-Rate-Limit', 'true');
       const responses = [];
 
       // When: User makes multiple rapid requests (more than rate limit)
       for (let i = 0; i < 5; i++) {
-        const response = await regularApiClient.post('/api/email/send-verification');
+        const response = await rateLimitClient.post('/api/email/send-verification');
         responses.push(response);
       }
 
@@ -217,13 +219,15 @@ describe('User Story: Email System', () => {
     });
 
     it('should enforce rate limits on password reset requests', async () => {
-      // Given: Multiple rapid reset requests
+      // Given: Multiple rapid reset requests with rate limit header
+      const rateLimitClient = createApiClient()
+        .setHeader('X-Test-Rate-Limit', 'true');
       const resetData = { email: regularUser.email };
       const responses = [];
 
       // When: User makes multiple rapid requests (more than rate limit)
       for (let i = 0; i < 5; i++) {
-        const response = await apiClient.post('/api/email/password-reset/send', resetData);
+        const response = await rateLimitClient.post('/api/email/password-reset/send', resetData);
         responses.push(response);
       }
 
@@ -233,12 +237,14 @@ describe('User Story: Email System', () => {
     });
 
     it('should enforce rate limits on email verification attempts', async () => {
-      // Given: Multiple rapid verification attempts
+      // Given: Multiple rapid verification attempts with rate limit header
+      const rateLimitClient = createApiClient()
+        .setHeader('X-Test-Rate-Limit', 'true');
       const responses = [];
 
       // When: User makes multiple verification attempts
       for (let i = 0; i < 12; i++) {
-        const response = await apiClient.post('/api/email/verify', {
+        const response = await rateLimitClient.post('/api/email/verify', {
           token: 'invalid-token-' + i,
         });
         responses.push(response);

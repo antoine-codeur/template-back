@@ -161,6 +161,53 @@ export class EmailService {
   }
 
   /**
+   * Send account suspended email
+   */
+  static async sendAccountSuspendedEmail(data: {
+    to: string;
+    name: string;
+    reason?: string;
+    suspendedBy?: string;
+  }): Promise<boolean> {
+    return this.sendEmail({
+      to: data.to,
+      subject: `${env.APP_NAME} account suspended`,
+      type: 'ACCOUNT_SUSPENDED',
+      templateData: {
+        appName: env.APP_NAME,
+        name: data.name,
+        reason: data.reason,
+        suspensionDate: new Date().toLocaleString(),
+        suspendedBy: data.suspendedBy,
+      },
+    });
+  }
+
+  /**
+   * Send account activated email
+   */
+  static async sendAccountActivatedEmail(data: {
+    to: string;
+    name: string;
+    reason?: string;
+    activatedBy?: string;
+  }): Promise<boolean> {
+    return this.sendEmail({
+      to: data.to,
+      subject: `${env.APP_NAME} account activated`,
+      type: 'ACCOUNT_ACTIVATED',
+      templateData: {
+        appName: env.APP_NAME,
+        name: data.name,
+        reason: data.reason,
+        activationDate: new Date().toLocaleString(),
+        activatedBy: data.activatedBy,
+        loginUrl: `${process.env.FRONTEND_URL}/login`,
+      },
+    });
+  }
+
+  /**
    * Get email content from templates
    */
   private static async getEmailContent(

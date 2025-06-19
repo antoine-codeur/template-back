@@ -21,6 +21,9 @@ model User {
   status           String   @default("ACTIVE") // ACTIVE, SUSPENDED, DELETED
   emailVerified    Boolean  @default(false)
   emailVerifiedAt  DateTime?
+  suspensionReason String?  // Reason for suspension
+  suspendedAt      DateTime? // When the user was suspended
+  suspendedBy      String?  // ID of admin who suspended the user
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
   lastLogin        DateTime?

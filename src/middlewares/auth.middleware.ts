@@ -19,6 +19,9 @@ const toSafeUser = (user: any): SafeUser => ({
   createdAt: user.createdAt,
   updatedAt: user.updatedAt,
   lastLogin: user.lastLogin ?? null,
+  suspensionReason: user.suspensionReason ?? null,
+  suspendedAt: user.suspendedAt ?? null,
+  suspendedBy: user.suspendedBy ?? null,
 });
 
 export const authenticate = async (
@@ -43,7 +46,15 @@ export const authenticate = async (
       throw new AppError('User not found', HTTP_STATUS.UNAUTHORIZED);
     }
 
-    // Check if user is active
+    // Check if user is active (includes suspension check)
+    if (user.status === 'SUSPENDED') {
+      throw new AppError('Account is suspended. Please contact support for assistance.', HTTP_STATUS.FORBIDDEN);
+    }
+    
+    if (user.status === 'DELETED') {
+      throw new AppError('Account has been deleted', HTTP_STATUS.UNAUTHORIZED);
+    }
+    
     if (user.status !== 'ACTIVE') {
       throw new AppError('Account is not active', HTTP_STATUS.UNAUTHORIZED);
     }

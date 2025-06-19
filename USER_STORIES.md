@@ -86,13 +86,20 @@ This document outlines the core user stories and features for the Node.js Backen
   - **Endpoints**: `DELETE /api/admin/users/:id`
   - **Status**: Complete with safe deletion practices
   
-- 📋 As an **admin**, I want to **suspend a user** so that I can temporarily restrict access
-  - **Acceptance Criteria**: Set suspension reason, notify user
+- ✅ As an **admin**, I want to **suspend a user** so that I can temporarily restrict access
+  - **Acceptance Criteria**: Set suspension reason, notify user via email, prevent admin self-suspension
   - **Endpoints**: `POST /api/admin/users/:id/suspend`
+  - **Status**: Complete with email notifications and comprehensive validation
   
-- 📋 As an **admin**, I want to **activate a suspended user** so that I can restore their access
-  - **Acceptance Criteria**: Remove suspension, restore permissions
+- ✅ As an **admin**, I want to **activate a suspended user** so that I can restore their access
+  - **Acceptance Criteria**: Remove suspension, restore permissions, notify user via email
   - **Endpoints**: `POST /api/admin/users/:id/activate`
+  - **Status**: Complete with email notifications and status restoration
+
+- ✅ As an **admin**, I want to **view user suspension details** so that I can track suspension history
+  - **Acceptance Criteria**: Show suspension status, reason, dates, and responsible admin
+  - **Endpoints**: `GET /api/admin/users/:id/suspension`
+  - **Status**: Complete with detailed suspension information
 
 ---
 
@@ -127,8 +134,8 @@ This document outlines the core user stories and features for the Node.js Backen
 
 ### Email Notifications
 - ✅ As a **user**, I want to **receive email notifications for important account changes** so that I'm aware of security events
-  - **Acceptance Criteria**: Password changes, account updates, security notifications
-  - **Templates**: Welcome, password-changed, verification, password-reset
+  - **Acceptance Criteria**: Password changes, account updates, security notifications, suspension/activation alerts
+  - **Templates**: Welcome, password-changed, verification, password-reset, account-suspended, account-activated
   - **Status**: Complete with 6 email templates and multi-provider support
 
 ### Email Administration

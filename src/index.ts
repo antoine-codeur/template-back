@@ -63,7 +63,7 @@ app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 // Logging middleware
 app.use(requestLogger);
 
-// API routes
+// API routes (versionning à ajouter)
 app.use('/api', routes);
 
 // Error handling middleware

@@ -5,7 +5,6 @@ import { EMAIL_TYPES, EMAIL_PROVIDERS } from '@/config/constants';
  * Email verification token schema
  */
 export const EmailVerificationSchema = z.object({
-  email: z.string().email('Invalid email format'),
   token: z.string().min(1, 'Token is required'),
 });
 

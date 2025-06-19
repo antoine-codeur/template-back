@@ -6,6 +6,7 @@ import {
   deleteUserController,
   suspendUserController,
   activateUserController,
+  getUserSuspensionDetailsController,
   getMeController,
   updateMeController,
   uploadProfileImageController,
@@ -13,6 +14,14 @@ import {
 } from '@/controllers/user.controller';
 import { authenticate, requireAdmin } from '@/middlewares/auth.middleware';
 import { uploadProfileImage, handleMulterError } from '@/middlewares/upload.middleware';
+import { validateBody, validateQuery } from '@/middlewares/validation.middleware';
+import { 
+  UserQuerySchema, 
+  UpdateUserSchema, 
+  UpdateProfileSchema, 
+  SuspendUserSchema, 
+  ActivateUserSchema 
+} from '@/models/user.model';
 
 const router = Router();
 
@@ -21,18 +30,19 @@ router.use(authenticate);
 
 // Regular user routes
 router.get('/me', getMeController);
-router.put('/me', updateMeController);
+router.put('/me', validateBody(UpdateProfileSchema), updateMeController);
 
 // Profile image routes
 router.post('/me/profile-image', uploadProfileImage, uploadProfileImageController);
 router.delete('/me/profile-image', deleteProfileImageController);
 
 // Admin routes
-router.get('/', requireAdmin, getUsersController);
+router.get('/', requireAdmin, validateQuery(UserQuerySchema), getUsersController);
 router.get('/:id', requireAdmin, getUserByIdController);
-router.put('/:id', requireAdmin, updateUserController);
+router.get('/:id/suspension', requireAdmin, getUserSuspensionDetailsController);
+router.put('/:id', requireAdmin, validateBody(UpdateUserSchema), updateUserController);
 router.delete('/:id', requireAdmin, deleteUserController);
-router.post('/:id/suspend', requireAdmin, suspendUserController);
-router.post('/:id/activate', requireAdmin, activateUserController);
+router.post('/:id/suspend', requireAdmin, validateBody(SuspendUserSchema), suspendUserController);
+router.post('/:id/activate', requireAdmin, validateBody(ActivateUserSchema), activateUserController);
 
 export default router;

@@ -16,6 +16,9 @@ export interface User {
   status: UserStatus;
   emailVerified: boolean;
   emailVerifiedAt?: Date | null;
+  suspensionReason?: string | null;
+  suspendedAt?: Date | null;
+  suspendedBy?: string | null;
   createdAt: Date;
   updatedAt: Date;
   lastLogin?: Date | null;
@@ -31,6 +34,9 @@ export interface SafeUser {
   status: UserStatus;
   emailVerified: boolean;
   emailVerifiedAt: Date | null;
+  suspensionReason: string | null;
+  suspendedAt: Date | null;
+  suspendedBy: string | null;
   createdAt: Date;
   updatedAt: Date;
   lastLogin: Date | null;

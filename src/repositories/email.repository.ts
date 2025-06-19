@@ -84,7 +84,8 @@ export class EmailRepository {
     type: keyof typeof EMAIL_TOKEN_TYPES
   ): Promise<{ userId: string; isValid: boolean }> {
     try {
-      const emailToken = await prisma.emailToken.findFirst({
+      // Atomically find and update the token in one operation to prevent race conditions
+      const emailToken = await prisma.emailToken.updateMany({
         where: {
           token,
           type,
@@ -93,26 +94,33 @@ export class EmailRepository {
             gt: new Date(), // Not expired
           },
         },
+        data: { usedAt: new Date() },
       });
 
-      if (!emailToken) {
+      // If no rows were updated, the token was invalid, expired, or already used
+      if (emailToken.count === 0) {
         logger.warn('Invalid or expired email token', { token: token.substring(0, 8) + '...', type });
         return { userId: '', isValid: false };
       }
 
-      // Mark token as used
-      await prisma.emailToken.update({
-        where: { id: emailToken.id },
-        data: { usedAt: new Date() },
+      // Get the token details to return userId
+      const tokenDetails = await prisma.emailToken.findFirst({
+        where: { token, type },
+        select: { userId: true, id: true },
       });
+
+      if (!tokenDetails) {
+        logger.error('Token updated but not found', { token: token.substring(0, 8) + '...', type });
+        return { userId: '', isValid: false };
+      }
 
       logger.info('Email token verified and consumed', { 
-        userId: emailToken.userId, 
+        userId: tokenDetails.userId, 
         type,
-        tokenId: emailToken.id 
+        tokenId: tokenDetails.id 
       });
 
-      return { userId: emailToken.userId, isValid: true };
+      return { userId: tokenDetails.userId, isValid: true };
     } catch (error) {
       logger.error('Failed to verify email token', { error, token: token.substring(0, 8) + '...', type });
       return { userId: '', isValid: false };

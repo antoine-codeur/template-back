@@ -1,9 +1,8 @@
-import { PrismaClient } from '@prisma/client';
 import { generateToken } from '@/utils/helpers';
-import { User, UserRole, UserStatus } from '@/models/user.model';
+import { User } from '@/models/user.model';
+import { UserRole, UserStatus } from '@/types';
 import { JwtPayload } from '@/models/auth.model';
-
-const prisma = new PrismaClient();
+import { prisma } from '@/config/database';
 
 export interface TestUser {
   id: string;
@@ -106,6 +105,10 @@ export const createRegularUser = async (
  * Clean up all test users
  */
 export const cleanupTestUsers = async (): Promise<void> => {
+  // Delete email tokens first to avoid foreign key constraints
+  await prisma.emailToken.deleteMany();
+  await prisma.emailLog.deleteMany();
+  // Then delete users
   await prisma.user.deleteMany();
 };
 

@@ -5,9 +5,15 @@ let prisma: PrismaClient;
 declare global {
   // eslint-disable-next-line no-var
   var __prisma: PrismaClient | undefined;
+  var testHelpers: {
+    prisma: PrismaClient;
+  };
 }
 
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'test' && global.testHelpers) {
+  // Use the test helper's Prisma instance in test environment
+  prisma = global.testHelpers.prisma;
+} else if (process.env.NODE_ENV === 'production') {
   prisma = new PrismaClient();
 } else {
   if (!global.__prisma) {

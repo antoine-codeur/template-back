@@ -14,12 +14,16 @@ beforeAll(async () => {
 
 afterAll(async () => {
   // Cleanup test database
+  await prisma.emailToken.deleteMany();
+  await prisma.emailLog.deleteMany();
   await prisma.user.deleteMany();
   await prisma.$disconnect();
 });
 
 beforeEach(async () => {
   // Clean database before each test
+  await prisma.emailToken.deleteMany();
+  await prisma.emailLog.deleteMany();
   await prisma.user.deleteMany();
 });
 

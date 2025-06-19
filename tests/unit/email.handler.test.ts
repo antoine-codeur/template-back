@@ -79,6 +79,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
           message: 'Verification email sent successfully',
+          data: {},
         });
       });
 
@@ -118,6 +119,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
           message: 'Email is already verified',
+          data: {},
         });
       });
 
@@ -169,6 +171,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
           message: 'Email verified successfully',
+          data: {},
         });
       });
 
@@ -225,6 +228,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
           message: 'If an account with this email exists, a password reset link has been sent.',
+          data: {},
         });
       });
 
@@ -241,6 +245,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
           message: 'If an account with this email exists, a password reset link has been sent.',
+          data: {},
         });
         expect(mockedEmailService.sendEmail).not.toHaveBeenCalled();
       });
@@ -273,6 +278,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
           message: 'Password reset successfully',
+          data: {},
         });
       });
 
@@ -330,7 +336,7 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockStatus).toHaveBeenCalledWith(HTTP_STATUS.OK);
         expect(mockJson).toHaveBeenCalledWith({
           success: true,
-          message: 'Reset token is valid',
+          message: 'Token is valid',
           data: {
             email: mockUser.email,
           },
@@ -349,8 +355,8 @@ describe('Email Handlers Unit Tests', () => {
         expect(mockStatus).toHaveBeenCalledWith(HTTP_STATUS.BAD_REQUEST);
         expect(mockJson).toHaveBeenCalledWith({
           success: false,
-          message: 'Invalid or expired reset token',
-          error: 'Invalid or expired reset token',
+          message: 'Invalid or expired token',
+          error: 'Invalid or expired token',
         });
       });
     });

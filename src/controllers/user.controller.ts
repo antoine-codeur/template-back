@@ -5,16 +5,19 @@ import {
   getUserByIdHandler,
   updateUserHandler,
   deleteUserHandler,
-  suspendUserHandler,
-  activateUserHandler,
   getCurrentUserHandler,
   updateCurrentUserHandler,
 } from '@/handlers/user/user.handler';
 import {
+  suspendUserHandler,
+  activateUserHandler,
+  getUserSuspensionDetailsHandler,
+} from '@/handlers/user/user-suspension.handler';
+import {
   uploadProfileImageHandler,
   deleteProfileImageHandler
 } from '@/handlers/user/profile-image.handler';
-import { UserQuerySchema, UpdateUserSchema, UpdateProfileSchema } from '@/models/user.model';
+import { UserQuerySchema, UpdateUserSchema, UpdateProfileSchema, SuspendUserSchema, ActivateUserSchema } from '@/models/user.model';
 import { HTTP_STATUS } from '@/config/constants';
 import { ApiResponse } from '@/types';
 import { isValidUUID } from '@/utils/validators';
@@ -111,7 +114,10 @@ export const deleteUserController = async (req: AuthenticatedRequest, res: Respo
   await deleteUserHandler(id, res);
 };
 
-export const suspendUserController = async (req: Request, res: Response): Promise<void> => {
+/**
+ * Suspend user controller
+ */
+export const suspendUserController = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
   if (!id || !isValidUUID(id)) {
@@ -124,10 +130,55 @@ export const suspendUserController = async (req: Request, res: Response): Promis
     return;
   }
 
-  await suspendUserHandler(id, res);
+  // Check if admin is trying to suspend themselves
+  if (req.user && req.user.id === id) {
+    const response: ApiResponse = {
+      success: false,
+      message: 'Cannot suspend your own account',
+      error: 'Cannot suspend your own account',
+    };
+    res.status(HTTP_STATUS.BAD_REQUEST).json(response);
+    return;
+  }
+
+  try {
+    if (!req.user || !req.user.id) {
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        message: 'Authentication required',
+        error: 'User not authenticated'
+      });
+      return;
+    }
+
+    // Validation is handled by middleware, req.body is already validated
+    await suspendUserHandler(id, req.body, req.user.id);
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'User suspended successfully',
+      data: {},
+    };
+    res.status(HTTP_STATUS.OK).json(response);
+  } catch (error) {
+    const response: ApiResponse = {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to suspend user',
+      error: error instanceof Error ? error.message : 'Failed to suspend user',
+    };
+
+    const statusCode = error instanceof Error && 'statusCode' in error 
+      ? (error as any).statusCode 
+      : HTTP_STATUS.INTERNAL_SERVER_ERROR;
+
+    res.status(statusCode).json(response);
+  }
 };
 
-export const activateUserController = async (req: Request, res: Response): Promise<void> => {
+/**
+ * Activate user controller
+ */
+export const activateUserController = async (req: AuthenticatedRequest, res: Response): Promise<void> => {
   const { id } = req.params;
 
   if (!id || !isValidUUID(id)) {
@@ -140,7 +191,78 @@ export const activateUserController = async (req: Request, res: Response): Promi
     return;
   }
 
-  await activateUserHandler(id, res);
+  try {
+    if (!req.user || !req.user.id) {
+      res.status(HTTP_STATUS.UNAUTHORIZED).json({
+        success: false,
+        message: 'Authentication required',
+        error: 'User not authenticated'
+      });
+      return;
+    }
+
+    // Validation is handled by middleware, req.body is already validated
+    await activateUserHandler(id, req.body, req.user.id);
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'User activated successfully',
+      data: {},
+    };
+    res.status(HTTP_STATUS.OK).json(response);
+  } catch (error) {
+    const response: ApiResponse = {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to activate user',
+      error: error instanceof Error ? error.message : 'Failed to activate user',
+    };
+
+    const statusCode = error instanceof Error && 'statusCode' in error 
+      ? (error as any).statusCode 
+      : HTTP_STATUS.INTERNAL_SERVER_ERROR;
+
+    res.status(statusCode).json(response);
+  }
+};
+
+/**
+ * Get user suspension details controller
+ */
+export const getUserSuspensionDetailsController = async (req: Request, res: Response): Promise<void> => {
+  const { id } = req.params;
+
+  if (!id || !isValidUUID(id)) {
+    const response: ApiResponse = {
+      success: false,
+      message: 'Invalid user ID format',
+      error: 'Invalid user ID format',
+    };
+    res.status(HTTP_STATUS.BAD_REQUEST).json(response);
+    return;
+  }
+
+  try {
+    const suspensionDetails = await getUserSuspensionDetailsHandler(id);
+
+    const response: ApiResponse = {
+      success: true,
+      message: 'Suspension details retrieved successfully',
+      data: suspensionDetails,
+    };
+    res.status(HTTP_STATUS.OK).json(response);
+  } catch (error) {
+    const response: ApiResponse = {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to get suspension details',
+      error: error instanceof Error ? error.message : 'Failed to get suspension details',
+    };
+
+    const statusCode = error instanceof Error && 'statusCode' in error 
+      ? (error as any).statusCode 
+      : HTTP_STATUS.INTERNAL_SERVER_ERROR;
+
+    res.status(statusCode).json(response);
+  }
 };
 
 // Regular user controllers (for /users/me endpoints)

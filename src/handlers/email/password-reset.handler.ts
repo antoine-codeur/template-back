@@ -27,6 +27,7 @@ export const sendPasswordResetHandler = async (
       const response: ApiResponse = {
         success: true,
         message: 'If an account with this email exists, a password reset link has been sent.',
+        data: {},
       };
       res.status(HTTP_STATUS.OK).json(response);
       return;
@@ -37,6 +38,7 @@ export const sendPasswordResetHandler = async (
       const response: ApiResponse = {
         success: true,
         message: 'If an account with this email exists, a password reset link has been sent.',
+        data: {},
       };
       res.status(HTTP_STATUS.OK).json(response);
       return;
@@ -70,6 +72,7 @@ export const sendPasswordResetHandler = async (
     const response: ApiResponse = {
       success: true,
       message: 'If an account with this email exists, a password reset link has been sent.',
+      data: {},
     };
 
     res.status(HTTP_STATUS.OK).json(response);
@@ -145,6 +148,7 @@ export const resetPasswordHandler = async (
     const response: ApiResponse = {
       success: true,
       message: 'Password reset successfully',
+      data: {},
     };
 
     res.status(HTTP_STATUS.OK).json(response);
@@ -179,7 +183,7 @@ export const validateResetTokenHandler = async (
     // Get token info without consuming it
     const emailToken = await EmailRepository.getTokenInfo(token);
     if (!emailToken || emailToken.type !== 'PASSWORD_RESET' || emailToken.usedAt || emailToken.expiresAt < new Date()) {
-      throw new AppError('Invalid or expired reset token', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError('Invalid or expired token', HTTP_STATUS.BAD_REQUEST);
     }
 
     // Get user to ensure they still exist and are active
@@ -190,7 +194,7 @@ export const validateResetTokenHandler = async (
 
     const response: ApiResponse = {
       success: true,
-      message: 'Reset token is valid',
+      message: 'Token is valid',
       data: {
         email: user.email, // Return email for UI display
       },
